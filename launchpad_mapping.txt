@@ -1,0 +1,57 @@
+top row : CC (Status 176) [0xB0, data1, data2]
+arrows
+data1: 104 - 111
+data2: 127 (on), 0 (off)
+
+grid: Note (Status 144) [0x90, data1, data2]
+row1:
+data1: 0 - 8
+
+row2:
+data1: 16 - 24
+
+...
+
+0: off
+1: lo red
+2: mi red
+3: hi red
+4: off
+5: lo red
+.
+.
+.
+15: hi red
+
+16: lo green
+17: lo yellow
+18: mi orange
+19: red + red + orange
+20: lo green
+.
+.
+.
+32: mi green
+33: mi yellow
+34: mi orange
+35: red + orange
+36: mi green
+
+.
+.
+.
+
+48: hi green
+49: hi green + yellow
+50: hi yellow
+51: hi orange
+52: hi green
+
+.
+.
+.
+64: off
+.
+.
+.
+repeat...
