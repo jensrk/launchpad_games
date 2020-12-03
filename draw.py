@@ -65,7 +65,6 @@ try:
 	while True:
 		msg = midi_in.get_message()
 		if msg:
-			print(msg)
 			if msg[0][0] == 176:
 				selected_color = msg[0][1] - 104
 			elif msg[0][0] == 144:
@@ -73,7 +72,6 @@ try:
 					selected_color = int(msg[0][1] / 16) + 8
 				else:
 					out = [144, msg[0][1], color_bar[selected_color]]
-					print(out)
 					midi_out.send_message(out)
 		time.sleep(0.01)
 except KeyboardInterrupt:
@@ -85,7 +83,3 @@ finally:
 	midi_out.close_port()
 	del midi_in
 	del midi_out
-
-#			if message[0] == 144:
-#				with midi_out:
-#					midi_out.send_message([144, message[1], RORANGE_HI]])

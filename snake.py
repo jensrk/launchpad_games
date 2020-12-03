@@ -11,6 +11,7 @@ UP = 104
 DOWN = 105
 LEFT = 106
 RIGHT = 107
+opposite = {UP: DOWN, DOWN: UP, LEFT: RIGHT, RIGHT: LEFT}
 
 color_bar = {0: 0, 1: 16, 2: 32, 3: 48, 4: 49, 5: 50, 6: 33, 7: 51, 8: 34, 9: 17, 10: 18, 11: 35, 12: 19, 13: 3, 14: 2, 15: 1}
 
@@ -66,12 +67,13 @@ try:
 		msg = midi_in.get_message()
 		if msg:
 			print(msg)
-			if msg[0][0] == 176:
+			if msg[0][0] == 176 and msg[0][1] != opposite[direction]:
 				midi_out.send_message([176, direction, GREEN_LO])
 				direction = msg[0][1]
 				midi_out.send_message([176, direction, GREEN_HI])
 		now = time.time()
 		if now - last_cycle > cycle_duration:
+			# calculate new field in directe of travel
 			if direction == UP:
 				new_field = ((int(snake[0] / 16) - 1) % 8) * 16 + snake[0] % 16
 			elif direction == DOWN:
@@ -80,25 +82,23 @@ try:
 				new_field = int(snake[0] / 16) * 16 + ((snake[0] % 16) - 1) % 8
 			elif direction == RIGHT:
 				new_field = int(snake[0] / 16) * 16 + ((snake[0] % 16) + 1) % 8
+			for i in range(len(snake) - snake_length):
+				midi_out.send_message([144, snake.pop(), 0])
 			if new_field in snake:
 				game_over = True
 				midi_out.send_message([144, new_field, RED_HI])
 			else:
 				midi_out.send_message([144, new_field, BRIGHT_ORANGE])
 				snake.insert(0,new_field)
-			for i in range(len(snake) - snake_length):
-				midi_out.send_message([144, snake.pop(), 0])
 			if new_field == goodie:
 				goodie = -1
 				snake_length += 1
 			if goodie_in <= 0:
-				found = False
-				while not found:
-					x = int(random.random() * 8)
-					y = int(random.random() * 8)
-					goodie = y * 16 + x
-					found = goodie not in snake
-				midi_out.send_message([144, goodie, RED_MI])
+				occupied_fields = snake + [goodie]
+				free_fields = [16*i+j for i in range(8) for j in range(8) if not 16*i+j in occupied_fields]
+				random.shuffle(free_fields)
+				goodie = free_fields[0]
+				midi_out.send_message([144, goodie, GREEN_HI])
 				goodie_in = int(random.random() * 10) + 5
 			if goodie < 0:
 				goodie_in -= 1
